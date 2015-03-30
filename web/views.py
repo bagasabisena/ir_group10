@@ -1,4 +1,4 @@
-from web import app, db
+from web import app, db, models
 from flask import render_template, request
 import elasticsearch
 
@@ -60,3 +60,8 @@ def venue(venue_id):
     es = elasticsearch.Elasticsearch()
     venue = es.get(index='4sreviews', doc_type='venues', id=venue_id)
     return render_template('venue.html', venue=venue)
+
+
+@app.route('/test')
+def test():
+    return models.Tip.query.first().text
