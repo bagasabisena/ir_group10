@@ -13,7 +13,7 @@
   <div class='row'>
     <div class='col-md-8'>
       {% for venue in venues %}
-      <a href={{ url_for('venue', venue_id=venue.venue_id) }}><h2>{{ venue }}</h2></a>
+      <a href={{ url_for('venue', venue_id=venue.venue_id) }}><h2>{{ venue.name }}</h2></a>
       <h3>{{ "%s, %s" % (venue.location, venue.location) }}
       {% endfor %}
     </div>

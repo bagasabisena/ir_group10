@@ -5,7 +5,6 @@ from sqlalchemy.sql import text
 from operator import itemgetter
 import json
 
-
 @app.route('/')
 def index():
     cursor = db.engine.execute('select * from region_table')
@@ -143,20 +142,34 @@ def search():
                 flag_count = flag_count + entry['flag']
 
                 if entry['flag'] == 5:
-                    semi['relevant_tips'].append((entry['user_id'],
-                                                  entry['tip_id'],
-                                                  entry['text']))
+                    tip = models.Tip.query.get(entry['tip_id'])
+                    # semi['relevant_tips'].append((entry['user_id'],
+                    #                               entry['tip_id'],
+                    #                               entry['text']))
+                    semi['relevant_tips'].append(tip.as_dict())
 
         semi['final_ph'] = ph / flag_count
         final.append(semi)
 
     sorted_final = sorted(final, key=itemgetter('final_ph'), reverse=True)
-    sorted_ids = [row['venue_id'] for row in sorted_final]
-    sorted_venues = models.Venue.query.filter(models.Venue.
-                                              venue_id.in_(sorted_ids)).all()
-    venues_as_json = [json.dumps(venue.as_dict()) for venue in sorted_venues]
+    # sorted_ids = [row['venue_id'] for row in sorted_final]
+    # sorted_venues = models.Venue.query.filter(models.Venue.
+    #                                           venue_id.in_(sorted_ids)).all()
+
+    sorted_venues = []
+
+    for row in sorted_final:
+        venue = models.Venue.query.filter_by(venue_id=row['venue_id']).first()
+        venue = venue.as_dict()
+        venue['tips'] = row['relevant_tips']
+        venue['final_ph'] = row['final_ph']
+        sorted_venues.append(venue)
+
+    return json.dumps(sorted_venues)
+
     return render_template('search.html', query=query,
-                           region=q_region_id, venues=venues_as_json)
+                           region=q_region_id,
+                           venues=sorted_venues)
 
 
 @app.route('/venue/<venue_id>')
