@@ -43,6 +43,7 @@ class Tip(db.Model):
         tip_dict['text'] = self.text
         tip_dict['user'] = self.user.as_dict()
         tip_dict['ph'] = self.ph
+        tip_dict['ph2'] = self.ph2
         return tip_dict
 
 
