@@ -7,7 +7,7 @@
 {% for tip in venue._source.tips %}
 <div class='row'>
   <div class='col-md-2'>
-    <a target="_blank" href={{ 'http://www.foursquare.com/user/' + tip.user.id }}>
+    <a target="_blank" href={{ 'http://www.foursquare.com/user/' + tip.user.user_id }}>
       <img src={{ tip.user.photo.prefix + '64x64' + tip.user.photo.suffix }} />
     </a>
     <p>{{ tip.user.firstname }}</p>

@@ -81,7 +81,7 @@ unlabeled = []
 all_data_labeled = []
 all_data_unlabeled = []
 
-f = open('food2.csv', 'rb')
+f = open('service2.csv', 'rb')
 try:
     reader = csv.reader(f, dialect="excel")
     # skip header
@@ -106,14 +106,14 @@ test_data = labeled[750:]
 
 # turns out basic feature extractor from TextBlob works best
 # need to explore why
-print "training naive bayes classifier for food"
+print "training naive bayes classifier for service"
 print "%d training and %d test" % (len(train_data), len(test_data))
 cl = NaiveBayesClassifier(train_data, feature_extractor=basic_extractor)
 print "accuracy: %f" % cl.accuracy(test_data)
 
 # classify unlabeled data and extract sentiment
 print "classify unlabeled data and extract sentiment"
-f = open('food3.csv', 'wt')
+f = open('service3.csv', 'wt')
 try:
     writer = csv.writer(f, quoting=csv.QUOTE_NONNUMERIC)
     # write header

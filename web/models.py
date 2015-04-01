@@ -93,5 +93,17 @@ class Venue(db.Model):
     stats = db.Column(db.String(1000))
     categories = db.Column(db.String(1000))
 
+    def as_dict(self):
+        venue_dict = {}
+        venue_dict['venue_id'] = self.venue_id
+        venue_dict['name'] = self.name
+        venue_dict['location'] = json.loads(self.location)
+        venue_dict['stats'] = self.stats
+        venue_dict['categories'] = json.loads(self.categories)
+        return venue_dict
+
+    def tojson(self):
+        return json.dumps(self.as_dict())
+
     def __repr__(self):
         return '<Venue %s>' % (self.venue_id)

@@ -9,16 +9,19 @@
 </head>
 
 <body>
-  <h1>Result for {{ query }}</h1>
+  <h1>Result for {{ query }} from region {{ region }}</h1>
   <div class='row'>
     <div class='col-md-8'>
-      {% for result in results %}
-      <a href={{ url_for('venue', venue_id=result._id) }}><h2>{{ result._source.name }}</h2></a>
-      <h3>{{ "%s, %s" % (result._source.location.city, result._source.location.country) }}
+      {% for venue in venues %}
+      <a href={{ url_for('venue', venue_id=venue.venue_id) }}><h2>{{ venue }}</h2></a>
+      <h3>{{ "%s, %s" % (venue.location, venue.location) }}
       {% endfor %}
     </div>
     <div class='col-md-4'>Semantic Search</div>
   </div>
+  <script>
+  console.log({{ venues|tojson|safe }})
+  </script>
 </body>
 
 </html>
