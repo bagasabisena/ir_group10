@@ -30,6 +30,14 @@
       <div class="field_content">
         <form action='/search' method='GET'>
           <input class="field" type="text" name='q'/>
+          <select name='region'>
+            {% for row in rows %}
+            <option value={{row[0]}}>
+            {{"%s" %row[1]}}
+              
+            </option>
+            {% endfor %}
+          </select>
           <button class="submit" type="submit" value="" />
         </form>
       </div>

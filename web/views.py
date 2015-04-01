@@ -1,17 +1,27 @@
 from web import app, db, models
 from flask import render_template, request
 import elasticsearch
+from flaskext.mysql import MySQL
 
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    cursor = db.engine.execute('select * from region_table')
+    #cursor=mysql.connect().cursor()
+    #cursor.execute("select * from region_table")
+    rows = cursor.fetchall()
+
+    for row in rows:
+        row="%s" %row
+        print row
+    return render_template('index.html',rows=rows)
 
 
 @app.route('/search')
 def search():
     es = elasticsearch.Elasticsearch()
     query = request.args.get('q', '')
+    region_id = request.args.get('region', '')
     body = """
 {
   "query": {
