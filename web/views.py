@@ -135,7 +135,7 @@ def search():
         # semi['ph'] = 0
         ph = 0
         # semi['flag_count'] = 0
-        flag_count = 0
+        flag_count = 1
         semi['relevant_tips'] = []
         for entry in entries:
             if venue_id == entry['venue_id']:
