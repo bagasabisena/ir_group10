@@ -167,11 +167,11 @@ def search():
         venue['final_ph'] = row['final_ph']
         sorted_venues.append(venue)
 
-    return json.dumps(sorted_venues)
+    
 
     return render_template('search.html', query=query,
                            region=q_region_id,
-                           venues=sorted_venues)
+                           venues=json.dumps(sorted_venues))
 
 
 @app.route('/venue/<venue_id>')

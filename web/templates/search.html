@@ -10,17 +10,63 @@
 
 <body>
   <h1>Result for {{ query }} from region {{ region }}</h1>
-  <div class='row'>
-    <div class='col-md-8'>
-      {% for venue in venues %}
-      <a href={{ url_for('venue', venue_id=venue.venue_id) }}><h2>{{ venue.name }}</h2></a>
-      <h3>{{ "%s, %s" % (venue.location, venue.location) }}
-      {% endfor %}
+
+    <div class="container fluid" id='main_cont'>
+      <div class='row' id='main_cont'></div>
+
     </div>
-    <div class='col-md-4'>Semantic Search</div>
-  </div>
   <script>
-  console.log({{ venues|tojson|safe }})
+  var venues=JSON.parse({{ venues|tojson|safe }})
+
+  
+  console.log('venues',venues);
+  for(i=0;i<venues.length;i++)
+  {
+    var color="";
+    if(venues[i]['final_ph']>0.3)
+    {
+      color="panel panel-success";
+    }
+    else if(venues[i]['final_ph']<-0.3)
+    {
+      color="panel panel-danger";
+    }
+    else
+    {
+      color="panel panel-primary";
+    }
+    $("#main_cont").append("<div class=''><div class='"+color+"'>"+
+                              "<div class='panel-heading'>"+
+                                "<h2 class='panel-title'>"+venues[i]['name']+"</h2>"+
+                              "</div>"+
+                              "<div class='panel-body row'>"+
+                                "<div class='col-md-4' title='categories'>Category:"+venues[i]['categories'][0]['name']+"</div>"+
+                                "<div class='col-md-8' title='location'>Address:"+venues[i]['location']['address']+", "+venues[i]['location']['city']+", "+venues[i]['location']['country']+"</div>"+
+                                "<div class='col-md-12' title='Tips'><ul class='col-md-4 list-group' id='tips_p_"+i+"'></ul><ul class='col-md-4 list-group' id='tips_n_"+i+"'></ul><ul class='col-md-4 list-group' id='tips_neg_"+i+"'></ul></div>"+
+                              "</div>"+
+                            "</div></div>");
+    for(j=0;j<venues[i]['tips'].length;j++)
+    {
+      var tip_colors="";
+      var tip_id="";
+      if(venues[i]['tips'][j]['ph2']>0.3)
+    {
+      tip_colors="list-group-item list-group-item-success";
+      tip_id="#tips_p_"+i;
+    }
+    else if(venues[i]['tips'][j]['ph2']<-0.3)
+    {
+      tip_colors="list-group-item list-group-item-danger";
+      tip_id="#tips_neg_"+i;
+    }
+    else
+    {
+      tip_colors="list-group-item list-group-item-warning";
+      tip_id="#tips_n_"+i;
+    }
+      $(tip_id).append("<li class='"+tip_colors+"'><span class='badge'>"+venues[i]['tips'][j]['likes']+" likes</span><h5 class='col-md-offset-4'>"+venues[i]['tips'][j]['user']['firstname']+" "+venues[i]['tips'][j]['user']['lastname']+"</h5>, <sub>"+venues[i]['tips'][j]['user']['homecity']+"</sub>:"+venues[i]['tips'][j]['text']+"</li>")
+    }
+  }
   </script>
 </body>
 
