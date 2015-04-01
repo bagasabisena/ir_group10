@@ -108,3 +108,26 @@ class Venue(db.Model):
 
     def __repr__(self):
         return '<Venue %s>' % (self.venue_id)
+
+
+# class SummaryFood(db.Model):
+#     __tablename__ = 'food'
+
+#     sentence = db.Column(db.String(200))
+#     tip_id = db.Column(db.ForeignKey(u'tips.tip_id'), index=True)
+#     label = db.Column(db.Integer)
+#     ph = db.Column(db.Float())
+
+#     tip = db.relationship(u'Tip', backref='summaries_food')
+
+
+# class SummaryService(db.Model):
+#     __tablename__ = 'service'
+
+#     sentence = db.Column(db.String(200))
+#     tip_id = db.Column(db.ForeignKey(u'tips.tip_id'), index=True)
+#     label = db.Column(db.Integer)
+#     ph = db.Column(db.Float())
+
+#     tip = db.relationship(u'Tip', backref='summaries_service')
+

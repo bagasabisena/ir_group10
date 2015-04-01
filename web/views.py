@@ -5,17 +5,18 @@ from sqlalchemy.sql import text
 from operator import itemgetter
 import json
 
+
 @app.route('/')
 def index():
     cursor = db.engine.execute('select * from region_table')
-    #cursor=mysql.connect().cursor()
-    #cursor.execute("select * from region_table")
+    # cursor=mysql.connect().cursor()
+    # cursor.execute("select * from region_table")
     rows = cursor.fetchall()
 
     for row in rows:
-        row="%s" %row
+        row = "%s" % row
         print row
-    return render_template('index.html',rows=rows)
+    return render_template('index.html', rows=rows)
 
 
 @app.route('/search')
@@ -61,7 +62,8 @@ def search():
 }
 """ % (query, query, query)
     # elasticsearch should return all venue_ids
-    # it is ranked the same
+    # relevance from elasticsearch is ignored
+    # ranking is by origin on below codes
     returned_query = es.search(index='4sreviews', doc_type='venues',
                                body=body, fields=['_id'])
     results = returned_query['hits']['hits']
@@ -174,9 +176,78 @@ def search():
 
 @app.route('/venue/<venue_id>')
 def venue(venue_id):
-    es = elasticsearch.Elasticsearch()
-    venue = es.get(index='4sreviews', doc_type='venues', id=venue_id)
-    return render_template('venue.html', venue=venue)
+    q_region_id = int(request.args.get('region', ''))
+    venue = models.Venue.query.get(venue_id)
+
+    # from all the tips, get users
+    qry = "select distinct(user_id) from tips where venue_id = :venue_id"
+    params = {'venue_id': venue_id}
+    cursor = db.engine.execute(text(qry), params)
+    user_ids = [row[0] for row in cursor.fetchall()]
+
+    qry = "SELECT value as count FROM 4sreviews.intermediate where user_id=:user_id GROUP By value ORDER BY count desc LIMIT 1"
+
+    user_region = []
+
+    for u in user_ids:
+        params = {'user_id': u}
+        cursor = db.engine.execute(text(qry), params)
+        result = cursor.fetchall()
+        if not result:
+            region_id = 0
+        else:
+            region_id = result[0][0]
+            if region_id == q_region_id:
+                user_region.append(u)
+
+    qry = "SELECT tip_id FROM tips WHERE user_id IN :user_ids AND venue_id = :venue_id"
+    params = {'user_ids': user_region, 'venue_id': venue_id}
+    cursor = db.engine.execute(text(qry), params)
+    tip_ids = [row[0] for row in cursor.fetchall()]
+
+    summaries = []
+
+    for tip_id in tip_ids:
+        tip = models.Tip.query.get(tip_id)
+        user = tip.user
+
+        # get the summary for food
+        qry = "SELECT sentence, ph FROM food WHERE tip_id = :tip_id AND label = 1"
+        params = {'tip_id': tip_id}
+        cursor = db.engine.execute(text(qry), params)
+        summary_food = cursor.fetchall()
+
+        if summary_food:
+            for s in summary_food:
+                summary = {}
+                summary['user'] = user.as_dict()
+                summary['sentence'] = s[0]
+                summary['flag_food'] = 1
+                summary['flag_service'] = 0
+                summary['ph_food'] = s[1]
+                summary['ph_service'] = 0
+                summaries.append(summary)
+
+        # get the summary for service
+        qry = "SELECT sentence, ph FROM service WHERE tip_id = :tip_id AND label = 1"
+        params = {'tip_id': tip_id}
+        cursor = db.engine.execute(text(qry), params)
+        summary_service = cursor.fetchall()
+
+        if summary_service:
+            for s in summary_service:
+                summary = {}
+                summary['user'] = user.as_dict()
+                summary['sentence'] = s[0]
+                summary['flag_food'] = 0
+                summary['flag_service'] = 1
+                summary['ph_food'] = 0
+                summary['ph_service'] = s[1]
+                summaries.append(summary)
+
+    return render_template('venue.html',
+                           venue=json.dumps(venue.as_dict()),
+                           summary=json.dumps(summaries))
 
 
 @app.route('/test')
