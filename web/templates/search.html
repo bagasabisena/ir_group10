@@ -10,17 +10,30 @@
 
 <body>
   <h1>Result for {{ query }} from region {{ region }}</h1>
-  <div class='row'>
-    <div class='col-md-8'>
-      {% for venue in venues %}
-      <a href={{ url_for('venue', venue_id=venue.venue_id) }}><h2>{{ venue }}</h2></a>
-      <h3>{{ "%s, %s" % (venue.location, venue.location) }}
-      {% endfor %}
+    <div class="container fluid" id='main_cont'>
+      
     </div>
-    <div class='col-md-4'>Semantic Search</div>
-  </div>
   <script>
-  console.log({{ venues|tojson|safe }})
+  var venue={{ venues|tojson|safe }}
+
+  var venues=new Array();
+  for (i=0; i<venue.length; i++)
+  {
+    venues.push(JSON.parse(venue[i]))
+  }
+  console.log('venues',venues);
+  for(i=0;i<venues.length;i++)
+  {
+    $("#main_cont").append("<div class='panel panel-primary'>"+
+                              "<div class='panel-heading'>"+
+                                "<h3 class='panel-title'>"+venues[i]['name']+"</h3>"+
+                              "</div>"+
+                              "<div class='panel-body row'>"+
+                                "<div class='col-md-4' title='categories'>Category:"+venues[i]['categories'][0]['name']+"</div>"+
+                                "<div class='col-md-4' title='location'>Address:"+venues[i]['location']['address']+", "+venues[i]['location']['city']+", "+venues[i]['location']['country']+"</div>"+
+                              "</div>"+
+                            "</div>");
+  }
   </script>
 </body>
 
