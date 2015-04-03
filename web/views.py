@@ -167,10 +167,11 @@ def search():
         venue['final_ph'] = row['final_ph']
         sorted_venues.append(venue)
 
-    
+    # get region
+    region = models.Region.query.get(q_region_id)
 
     return render_template('search.html', query=query,
-                           region=q_region_id,
+                           region=json.dumps(region.as_dict()),
                            venues=json.dumps(sorted_venues))
 
 

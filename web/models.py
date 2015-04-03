@@ -110,6 +110,16 @@ class Venue(db.Model):
         return '<Venue %s>' % (self.venue_id)
 
 
+class Region(db.Model):
+    __tablename__ = 'region_table'
+
+    value = db.Column(db.Integer, primary_key=True)
+    region = db.Column(db.String(45))
+
+    def as_dict(self):
+        return {'value': self.value, 'region': self.region}
+
+
 # class SummaryFood(db.Model):
 #     __tablename__ = 'food'
 
