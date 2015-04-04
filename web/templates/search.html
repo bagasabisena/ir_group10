@@ -9,17 +9,19 @@
 </head>
 
 <body>
-  <h1>Result for {{ query }} from region {{ region }}</h1>
+  <h1 id='title_h'> </h1>
 
     <div class="container fluid" id='main_cont'>
       <div class='row' id='main_cont'></div>
 
     </div>
   <script>
-  var venues=JSON.parse({{ venues|tojson|safe }})
+  var venues=JSON.parse({{ venues|tojson|safe }});
 
-  
-  console.log('venues',venues);
+  var region=JSON.parse({{region|tojson|safe}});
+
+  $("#title_h").append("Result for {{ query }} from region "+region.region)
+  console.log('venues',venues, region);
   for(i=0;i<venues.length;i++)
   {
     var color="";
@@ -37,7 +39,7 @@
     }
     $("#main_cont").append("<div class=''><div class='"+color+"'>"+
                               "<div class='panel-heading'>"+
-                                "<h2 class='panel-title'>"+venues[i]['name']+"</h2>"+
+                                "<h2 class='panel-title'><a href='/venue/"+venues[i]['venue_id']+"?region="+region.value+"' target=_blank>"+venues[i]['name']+"</a></h2>"+
                               "</div>"+
                               "<div class='panel-body row'>"+
                                 "<div class='col-md-4' title='categories'>Category:"+venues[i]['categories'][0]['name']+"</div>"+

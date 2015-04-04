@@ -177,9 +177,10 @@ def search():
 
 @app.route('/venue/<venue_id>')
 def venue(venue_id):
+    
     q_region_id = int(request.args.get('region', ''))
     venue = models.Venue.query.get(venue_id)
-
+    
     # from all the tips, get users
     qry = "select distinct(user_id) from tips where venue_id = :venue_id"
     params = {'venue_id': venue_id}
@@ -245,6 +246,7 @@ def venue(venue_id):
                 summary['ph_food'] = 0
                 summary['ph_service'] = s[1]
                 summaries.append(summary)
+        print "reached here"
 
     return render_template('venue.html',
                            venue=json.dumps(venue.as_dict()),
