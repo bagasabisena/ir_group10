@@ -179,6 +179,7 @@ def search():
 def venue(venue_id):
     
     q_region_id = int(request.args.get('region', ''))
+    panel = request.args.get('panel', '')
     venue = models.Venue.query.get(venue_id)
     
     # from all the tips, get users
@@ -250,7 +251,8 @@ def venue(venue_id):
 
     return render_template('venue.html',
                            venue=json.dumps(venue.as_dict()),
-                           summary=json.dumps(summaries))
+                           summary=json.dumps(summaries),
+                            panel=panel)
 
 
 @app.route('/test')

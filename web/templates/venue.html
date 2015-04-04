@@ -10,11 +10,82 @@
 
 <body>
   <h1 id='title_h'> </h1>
+  <div class="container fluid" id='main_cont'>
+      <div class='row' id='main_cont'></div>
+
+    </div>
   <script>
-  var venue=JSON.parse(JSON.parse({{ venue|tojson|safe }}));
+  var venues=JSON.parse({{ venue|tojson }});
   var summary=JSON.parse({{ summary|tojson|safe }});
-  console.log('venue',venue);
+  console.log('venue',venues);
   console.log('summary',summary);
+
+  
+    var color='{{panel}}';
+    console.log('color',color)
+    
+    $("#main_cont").append("<div class='"+color+"'>"+
+                              "<div class='panel-heading'>"+
+                                "<h2 class='panel-title'>"+venues['name']+"</h2>"+
+                              "</div>"+
+                              "<div class='panel-body row'>"+
+                                "<div class='col-md-4' title='categories'>Category:"+venues['categories'][0]['name']+"</div>"+
+                                "<div class='col-md-8' title='location'>Address:"+venues['location']['address']+", "+venues['location']['city']+", "+venues['location']['country']+"</div>"+
+                                "<div class='col-md-12'><div class='panel panel-success col-md-6'><div class='panel-heading'><h2 class='panel-title col-md-offset-5'>FOOD</h2></div><div class='panel-body'><ul class='col-md-6 list-group' id='food_p'></ul><ul class='col-md-6 list-group' id='food_n'></ul></div></div><div class='panel panel-info col-md-6'><div class='panel-heading'><h2 class='panel-title col-md-offset-5'>SERVICE</h2></div><div class='panel-body'><ul class='col-md-6 list-group' id='service_p'></ul><ul class='col-md-6 list-group' id='service_n'></ul></div></div></div>"+
+                              "</div>"+
+                            "</div>");
+   
+  for (i=0;i<summary.length;i++)
+  {
+
+  	if(summary[i].flag_food==1)
+  	{
+  		var tid;
+  		var senti;
+  		if(summary[i].ph_food>0)
+  		{
+  			tid="#food_p";
+  			senti=true;
+  		}
+  		else
+  		{
+  			tid="#food_n";
+  			senti=false;
+  		}
+  		creatediv(tid,senti,summary[i].sentence,summary[i].user);
+  	}
+  	if(summary[i].flag_service==1)
+  	{
+  		var tid;
+  		var senti;
+  		if(summary[i].ph_service>0)
+  		{
+  			tid="#service_p";
+  			senti=true;
+  		}
+  		else
+  		{
+  			tid="#service_n";
+  			senti=false;
+  		}
+  		creatediv(tid,senti,summary[i].sentence,summary[i].user);
+  	}
+  }
+
+  function creatediv(tip_id,senti,sentence,user)
+  {
+  	
+  	var tip_colors;
+  	if(senti)
+  	{
+  		tip_colors="list-group-item list-group-item-info";
+  	}
+  	else
+  	{
+  		tip_colors="list-group-item list-group-item-danger";
+  	}
+  	$(tip_id).append("<li class='"+tip_colors+"'><div class=''><img src='"+user['photo']['prefix']+"64x64"+user['photo']['suffix']+"' class='img-circle'/>"+user['firstname']+" "+user['lastname']+", <sub>"+user['homecity']+"</sub></div>"+sentence+"</li>");
+  }
   </script>
 </body>
 </html>
