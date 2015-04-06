@@ -4,6 +4,7 @@ import elasticsearch
 from sqlalchemy.sql import text
 from operator import itemgetter
 import json
+import pprint
 
 
 @app.route('/')
@@ -51,9 +52,7 @@ def search():
             "match": {
                 "tips.text": {
                     "query":"%s",
-                    "analyzer": "english",
-                    "fuzziness": "auto"
-                }
+                    "analyzer": "english"                }
             }
         }
       ]
@@ -170,6 +169,9 @@ def search():
     # get region
     region = models.Region.query.get(q_region_id)
 
+    for v in sorted_venues:
+        print '%s - %f' % (v['venue_id'], v['final_ph'])
+
     return render_template('search.html', query=query,
                            region=json.dumps(region.as_dict()),
                            venues=json.dumps(sorted_venues))
@@ -177,11 +179,11 @@ def search():
 
 @app.route('/venue/<venue_id>')
 def venue(venue_id):
-    
+
     q_region_id = int(request.args.get('region', ''))
     panel = request.args.get('panel', '')
     venue = models.Venue.query.get(venue_id)
-    
+
     # from all the tips, get users
     qry = "select distinct(user_id) from tips where venue_id = :venue_id"
     params = {'venue_id': venue_id}
@@ -201,6 +203,10 @@ def venue(venue_id):
         else:
             region_id = result[0][0]
             if region_id == q_region_id:
+                user_region.append(u)
+            else:
+                # a workaround to show all tips in the detailed venue
+                # not only the relevant one
                 user_region.append(u)
 
     qry = "SELECT tip_id FROM tips WHERE user_id IN :user_ids AND venue_id = :venue_id"

@@ -26,8 +26,41 @@ print("creating '%s' index..." % (INDEX_NAME))
 res = es.indices.create(index=INDEX_NAME, body=request_body)
 print(" response: '%s'" % (res))
 
-print('creating index now...')
+mapping = """
+{
+    "venues": {
+        "properties": {
+            "name": {
+                "type": "string",
+                "analyzer": "simple"
+            },
+            "categories": {
+                "properties": {
+                    "shortName": {
+                        "type": "string",
+                        "analyzer": "english"
+                    }
+                }
+            },
+            "tips": {
+                "properties": {
+                    "text": {
+                        "type": "string",
+                        "analyzer": "english"
+                    }
+                }
+            }
+        }
+    }
+}
+"""
 
+print('change analyzer for field')
+res = es.indices.put_mapping(index=INDEX_NAME,
+                             doc_type='venues',
+                             body=mapping)
+
+print('creating index now...')
 
 for v in models.Venue.query.all():
     v_dict = {}
