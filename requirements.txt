@@ -3,7 +3,7 @@ Flask==0.10.1
 Flask-SQLAlchemy==2.0
 gnureadline==6.3.3
 inflect==0.2.5
-ipython==3.0.0
+ipython==7.16.3
 itsdangerous==0.24
 Jinja2==2.7.3
 MarkupSafe==0.23
